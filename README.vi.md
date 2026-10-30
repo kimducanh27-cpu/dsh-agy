@@ -3,7 +3,15 @@
 Giao **một việc trọn gói** cho Google Antigravity, dùng đúng tài khoản và cài
 đặt sẵn có của nó. Không cần dán API key: chỉ cần đăng nhập `agy` một lần.
 
-Có 2 cách dùng:
+Repo có 2 gói cho DSH và 1 cách dùng độc lập:
+
+- **Não chính** — `provider/`: Antigravity trả lời chat trong DSH
+  (Gemini/Claude/GPT). Cần đăng nhập Google riêng, dùng chung quota; không chính
+  thức nên ưu tiên tài khoản phụ. Xem `provider/README.md`.
+- **Thợ** — gói gốc: tool `subagent_antigravity`, giao một việc trọn gói qua `agy`.
+- **Độc lập** — `scripts/agy-task.mjs` cho mọi agent.
+
+Chi tiết từng cách:
 
 ## 1. Cho mọi AI agent (Codex, Claude Code, Qoder, Cursor…)
 

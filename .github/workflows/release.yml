@@ -1,0 +1,46 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check and test
+        run: |
+          npm run check
+          npm test
+      - name: Verify tag matches package versions
+        run: |
+          node -e "const fs=require('fs');const tag=process.env.GITHUB_REF_NAME.replace(/^v/,'');for(const p of ['package.json','provider/package.json']){const v=JSON.parse(fs.readFileSync(p,'utf8')).version;if(v!==tag){console.error(p+': version '+v+' does not match tag '+tag);process.exit(1)}}console.log('tag matches both package versions: '+tag)"
+      - name: Pack bundles
+        run: |
+          mkdir -p dist
+          npm pack --pack-destination dist
+          (cd provider && npm pack --pack-destination ../dist)
+          cd dist
+          sha256sum *.tgz | sort -k2 > SHA256SUMS
+      - name: Verify release artifacts
+        run: node scripts/verify-release.mjs
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=""
+          case "$GITHUB_REF_NAME" in
+            *-*) flags="--prerelease" ;;
+          esac
+          gh release create "$GITHUB_REF_NAME" dist/*.tgz dist/SHA256SUMS \
+            --title "$GITHUB_REF_NAME" \
+            --notes-file docs/evidence/p0-smoke.md \
+            $flags

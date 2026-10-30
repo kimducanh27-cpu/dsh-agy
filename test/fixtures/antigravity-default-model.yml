@@ -1,0 +1,7 @@
+# P0 smoke overlay: make the headless scratch profile answer with Antigravity.
+- id: agent-default-model
+  name: "@deepseek-ai/dsh-agent-default-model"
+  config:
+    provider: antigravity
+    model: gemini-3.8-flash
+    reasoningEffort: medium

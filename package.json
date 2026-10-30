@@ -1,6 +1,6 @@
 {
   "name": "dsh-subagent-antigravity",
-  "version": "0.1.0",
+  "version": "0.2.0-rc.1",
   "private": true,
   "description": "One-shot Antigravity subagent provider over the Antigravity CLI headless protocol",
   "type": "module",
@@ -36,6 +36,7 @@
     "url": "https://github.com/kimducanh27-cpu/antigravity-subagent/issues"
   },
   "scripts": {
+    "check": "node scripts/check-syntax.mjs",
     "test": "node --test test/wire.test.mjs test/provider.test.mjs test/seam.test.mjs"
   },
   "dsh": {

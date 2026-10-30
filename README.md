@@ -5,14 +5,38 @@ using its own **cached authentication and settings**. No API key is copied,
 stored, or forwarded: the Antigravity CLI (`agy`) signs in once, and every
 delegation reuses that login.
 
-This repository ships two ways to use it:
+This repository ships three ways to use Antigravity:
 
-1. **DeepSeek Harness plugin** — a bundle that exposes the
-   `subagent_antigravity` tool inside [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness).
-2. **Standalone bridge** — `scripts/agy-task.mjs`, a dependency-free Node.js
+1. **Model provider** — the `provider/` bundle registers Antigravity models
+   (Gemini/Claude/GPT) in [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness),
+   so the main chat is answered by Antigravity.
+2. **Subagent** — the root bundle exposes the `subagent_antigravity` tool for
+   one-shot delegation to the Antigravity agent.
+3. **Standalone bridge** — `scripts/agy-task.mjs`, a dependency-free Node.js
    script any agent (Codex, Claude Code, Qoder, Cursor, …) can clone and run.
 
 Vietnamese quick start: [README.vi.md](README.vi.md).
+
+## Repository layout
+
+| Path | What it is |
+|---|---|
+| root | `dsh-subagent-antigravity` — worker bundle (one-shot delegation via `agy`) |
+| `provider/` | `dsh-antigravity` — model-provider bundle (Antigravity as the main brain) |
+| `scripts/` | standalone bridge, scratch-profile and P0 smoke tooling |
+| `install/` | desktop installer and rollback (see `install/README.vi.md`) |
+| `docs/` | research notes, design spec, evidence and the Vietnamese guide |
+
+## Use Antigravity as the model provider
+
+`provider/` registers Antigravity in DSH's model picker and streams answers
+through Cloud Code Assist. It keeps its own Google OAuth credentials under
+`$DSH_HOME/storages/antigravity-oauth.json` — separate from the `agy` login used
+by the subagent — and consumes the same subscription quota.
+
+> Unofficial integration: use it only with an account you are authorized to
+> use, and prefer a secondary Google account. See `provider/README.md`.
+> Desktop install and rollback: `install/README.vi.md`.
 
 ## Requirements
 
