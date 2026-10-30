@@ -89,6 +89,15 @@ Ready-made briefs: [review](prompts/review.md),
 [implement](prompts/implement.md), [research](prompts/research.md),
 [debug](prompts/debug.md). Verify the answer yourself before using it.
 
+## 5. Desktop profile (Electron-managed)
+
+`dsh plugin --profile desktop ...` is refused by the CLI. Install with
+`install\install-desktop.ps1 -AllowDesktop` after closing the app (including the
+tray process): it edits the profile `package.json`, adds both bundles, and runs
+the bundled pnpm directly. Roll back with
+`install\rollback-desktop.ps1 -AllowDesktop`. Backups live under
+`~/.dsh/backups/antigravity-kit/`. See [docs/guide-vi.md](docs/guide-vi.md).
+
 ## Rules
 
 - **One task per delegation.** The target does not accept follow-up messages.

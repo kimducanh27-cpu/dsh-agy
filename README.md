@@ -51,8 +51,8 @@ by the subagent — and consumes the same subscription quota.
 ## Use it from any agent (standalone)
 
 ```bash
-git clone https://github.com/kimducanh27-cpu/antigravity-subagent.git
-cd antigravity-subagent
+git clone https://github.com/kimducanh27-cpu/dsh-agy.git
+cd dsh-agy
 
 node scripts/agy-task.mjs "Reply with exactly: hello from Antigravity"
 ```

@@ -21,6 +21,29 @@ function Resolve-Dsh {
   throw "dsh CLI not found. Pass -Dsh <path to dsh.cmd> or set DSH_CLI."
 }
 
+function Write-Utf8NoBom {
+  param([string]$Path, [string]$Content)
+  [System.IO.File]::WriteAllText($Path, $Content, (New-Object System.Text.UTF8Encoding($false)))
+}
+
+function Invoke-ProfilePnpmInstall {
+  param([string]$ProfilePath, [string]$DshExecutable)
+  $runtimeRoot = Split-Path (Split-Path (Split-Path $DshExecutable -Parent) -Parent) -Parent
+  $nodeExe = Join-Path $runtimeRoot "primary-runtime\dependencies\node\bin\node.exe"
+  $pnpmCjs = Join-Path $runtimeRoot "primary-runtime\dependencies\pnpm\bin\pnpm.cjs"
+  Push-Location $ProfilePath
+  try {
+    if ((Test-Path $nodeExe) -and (Test-Path $pnpmCjs)) {
+      & $nodeExe $pnpmCjs install
+    } else {
+      & pnpm install
+    }
+    if ($LASTEXITCODE -ne 0) { throw "pnpm install failed with exit code $LASTEXITCODE" }
+  } finally {
+    Pop-Location
+  }
+}
+
 if ([string]::IsNullOrWhiteSpace($DshHome)) {
   $DshHome = if ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE ".dsh" }
 }
@@ -88,13 +111,26 @@ $manifest = [ordered]@{
   installedAt = (Get-Date).ToString("o")
   files = $manifestFiles
 }
-$manifest | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $backupDir "manifest.json") -Encoding UTF8
+Write-Utf8NoBom -Path (Join-Path $backupDir "manifest.json") -Content (($manifest | ConvertTo-Json -Depth 6) + "`r`n")
 
 try {
   $linkRoot = $repoRoot -replace "\\", "/"
   $linkProvider = $providerRoot -replace "\\", "/"
-  & $dshPath plugin --profile $Profile add "link:$linkRoot" "link:$linkProvider"
-  if ($LASTEXITCODE -ne 0) { throw "dsh plugin add failed with exit code $LASTEXITCODE" }
+
+  $edit = Get-Content $packagePath -Raw | ConvertFrom-Json
+  $editDeps = [ordered]@{}
+  if ($edit.dependencies) { $edit.dependencies.PSObject.Properties | ForEach-Object { $editDeps[$_.Name] = $_.Value } }
+  $editDeps["dsh-subagent-antigravity"] = "link:$linkRoot"
+  $editDeps["dsh-antigravity"] = "link:$linkProvider"
+  $edit.dependencies = [pscustomobject]$editDeps
+  $editBundles = @($edit.dsh.profile.bundles)
+  foreach ($bundle in @("dsh-subagent-antigravity", "dsh-antigravity")) {
+    if ($editBundles -notcontains $bundle) { $editBundles += $bundle }
+  }
+  $edit.dsh.profile.bundles = $editBundles
+  Write-Utf8NoBom -Path $packagePath -Content (($edit | ConvertTo-Json -Depth 10) + "`r`n")
+
+  Invoke-ProfilePnpmInstall -ProfilePath $profilePath -DshExecutable $dshPath
 
   $pkg2 = Get-Content $packagePath -Raw | ConvertFrom-Json
   $deps2 = @{}
@@ -113,7 +149,7 @@ try {
     backup = $backupDir
     installedAt = (Get-Date).ToString("o")
   }
-  $marker | ConvertTo-Json -Depth 4 | Set-Content $markerPath -Encoding UTF8
+  Write-Utf8NoBom -Path $markerPath -Content (($marker | ConvertTo-Json -Depth 4) + "`r`n")
   Write-Host "Installed into profile '$Profile'."
   Write-Host "Backup: $backupDir"
   Write-Host "Next: open DSH, then Settings -> Antigravity -> Sign in."
@@ -128,6 +164,9 @@ try {
     } elseif (Test-Path $target) {
       Remove-Item $target -Force
     }
+  }
+  try { Invoke-ProfilePnpmInstall -ProfilePath $profilePath -DshExecutable $dshPath } catch {
+    Write-Warning "post-rollback pnpm install failed: $($_.Exception.Message)"
   }
   throw
 }

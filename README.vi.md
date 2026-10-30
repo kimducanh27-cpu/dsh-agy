@@ -11,13 +11,21 @@ Repo có 2 gói cho DSH và 1 cách dùng độc lập:
 - **Thợ** — gói gốc: tool `subagent_antigravity`, giao một việc trọn gói qua `agy`.
 - **Độc lập** — `scripts/agy-task.mjs` cho mọi agent.
 
+## Cài vào DSH desktop
+
+Hướng dẫn 5 bước đầy đủ: [docs/guide-vi.md](docs/guide-vi.md).
+Tóm tắt: clone repo → đóng app (cả tray) → chạy
+`install\install-desktop.ps1 -AllowDesktop` → mở app → Settings → Antigravity →
+Sign in → chọn model Antigravity. Rollback:
+`install\rollback-desktop.ps1 -AllowDesktop`.
+
 Chi tiết từng cách:
 
 ## 1. Cho mọi AI agent (Codex, Claude Code, Qoder, Cursor…)
 
 ```bash
-git clone https://github.com/kimducanh27-cpu/antigravity-subagent.git
-cd antigravity-subagent
+git clone https://github.com/kimducanh27-cpu/dsh-agy.git
+cd dsh-agy
 node scripts/agy-task.mjs "Trả lời đúng một dòng: xin chào từ Antigravity"
 ```
 

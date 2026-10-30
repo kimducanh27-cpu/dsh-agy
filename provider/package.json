@@ -58,12 +58,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kimducanh27-cpu/antigravity-subagent.git",
+    "url": "git+https://github.com/kimducanh27-cpu/dsh-agy.git",
     "directory": "provider"
   },
-  "homepage": "https://github.com/kimducanh27-cpu/antigravity-subagent/tree/main/provider#readme",
+  "homepage": "https://github.com/kimducanh27-cpu/dsh-agy/tree/main/provider#readme",
   "bugs": {
-    "url": "https://github.com/kimducanh27-cpu/antigravity-subagent/issues"
+    "url": "https://github.com/kimducanh27-cpu/dsh-agy/issues"
   },
   "peerDependencies": {
     "@deepseek-ai/dsh-home-paths": "*",

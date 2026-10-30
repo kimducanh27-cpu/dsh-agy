@@ -29,11 +29,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kimducanh27-cpu/antigravity-subagent.git"
+    "url": "git+https://github.com/kimducanh27-cpu/dsh-agy.git"
   },
-  "homepage": "https://github.com/kimducanh27-cpu/antigravity-subagent#readme",
+  "homepage": "https://github.com/kimducanh27-cpu/dsh-agy#readme",
   "bugs": {
-    "url": "https://github.com/kimducanh27-cpu/antigravity-subagent/issues"
+    "url": "https://github.com/kimducanh27-cpu/dsh-agy/issues"
   },
   "scripts": {
     "check": "node scripts/check-syntax.mjs",

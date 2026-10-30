@@ -59,6 +59,20 @@ jobs:
             exit 1
           fi
           echo "secret scan ok"
+      - name: Parse PowerShell installers
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          foreach ($file in @("install/install-desktop.ps1", "install/rollback-desktop.ps1")) {
+            $tokens = $null
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $file), [ref]$tokens, [ref]$errors) | Out-Null
+            if ($errors) {
+              $errors | ForEach-Object { Write-Error $_.Message }
+              exit 1
+            }
+          }
+          Write-Host "PowerShell parse OK"
       - name: Provider loads against dsh-llm@next
         if: matrix.os == 'ubuntu-latest' && matrix.node == 24
         run: node scripts/check-provider-load.mjs

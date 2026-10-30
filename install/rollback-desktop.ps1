@@ -20,6 +20,24 @@ function Resolve-Dsh {
   throw "dsh CLI not found. Pass -Dsh <path to dsh.cmd> or set DSH_CLI."
 }
 
+function Invoke-ProfilePnpmInstall {
+  param([string]$ProfilePath, [string]$DshExecutable)
+  $runtimeRoot = Split-Path (Split-Path (Split-Path $DshExecutable -Parent) -Parent) -Parent
+  $nodeExe = Join-Path $runtimeRoot "primary-runtime\dependencies\node\bin\node.exe"
+  $pnpmCjs = Join-Path $runtimeRoot "primary-runtime\dependencies\pnpm\bin\pnpm.cjs"
+  Push-Location $ProfilePath
+  try {
+    if ((Test-Path $nodeExe) -and (Test-Path $pnpmCjs)) {
+      & $nodeExe $pnpmCjs install
+    } else {
+      & pnpm install
+    }
+    if ($LASTEXITCODE -ne 0) { throw "pnpm install failed with exit code $LASTEXITCODE" }
+  } finally {
+    Pop-Location
+  }
+}
+
 if ([string]::IsNullOrWhiteSpace($DshHome)) {
   $DshHome = if ($env:DSH_HOME) { $env:DSH_HOME } else { Join-Path $env:USERPROFILE ".dsh" }
 }
@@ -75,8 +93,7 @@ foreach ($entry in $manifest.files.PSObject.Properties) {
 }
 
 $dshPath = Resolve-Dsh -Explicit $Dsh
-& $dshPath plugin --profile $Profile install
-if ($LASTEXITCODE -ne 0) { throw "pnpm install failed with exit code $LASTEXITCODE" }
+Invoke-ProfilePnpmInstall -ProfilePath $profilePath -DshExecutable $dshPath
 
 Remove-Item $markerPath -Force -ErrorAction SilentlyContinue
 Write-Host "Rolled back profile '$Profile' from $Backup"
