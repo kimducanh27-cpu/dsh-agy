@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { resolve } from "node:path"
 import test from "node:test"
 import {
   NO_START_CAPABILITIES,
@@ -82,6 +83,6 @@ test("validates timing bounds and child directories", () => {
   assert.throws(() => assertPositiveFinite("p", "ms", Number.NaN), /positive finite/)
   assert.equal(assertUsableCwd("p", "cwd", process.cwd()), process.cwd())
   assert.throws(() => assertUsableCwd("p", "cwd", "relative"), /absolute path/)
-  assert.throws(() => assertUsableCwd("p", "cwd", "C:\\definitely-missing-9f8e7d"), /not an accessible directory/)
+  assert.throws(() => assertUsableCwd("p", "cwd", resolve("definitely-missing-9f8e7d")), /not an accessible directory/)
   assert.equal(NO_START_CAPABILITIES.depthLimit, false)
 })

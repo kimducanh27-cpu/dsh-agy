@@ -3,6 +3,15 @@ import { PassThrough } from "node:stream"
 import test from "node:test"
 import { apply } from "../lib/index.js"
 
+/** Node 20-compatible Promise.withResolvers stand-in. */
+function withResolvers() {
+  let resolve
+  const promise = new Promise((res) => {
+    resolve = res
+  })
+  return { promise, resolve }
+}
+
 /**
  * Build a fake subprocess handle the provider cannot distinguish from a real one.
  * @returns the handle plus test-side controls.
@@ -11,7 +20,7 @@ function fakeChild() {
   const stdin = new PassThrough()
   const stdout = new PassThrough()
   const stderr = new PassThrough()
-  const done = Promise.withResolvers()
+  const done = withResolvers()
   const state = { terminated: 0, stdinText: "" }
   stdin.setEncoding("utf8")
   stdin.on("data", (chunk) => {
