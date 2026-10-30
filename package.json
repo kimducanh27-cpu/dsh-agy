@@ -1,6 +1,6 @@
 {
   "name": "dsh-subagent-antigravity",
-  "version": "0.2.0-rc.1",
+  "version": "0.2.1-rc.5",
   "private": true,
   "description": "One-shot Antigravity subagent provider over the Antigravity CLI headless protocol",
   "type": "module",

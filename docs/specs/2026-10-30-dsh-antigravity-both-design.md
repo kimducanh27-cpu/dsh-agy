@@ -192,7 +192,7 @@ trước đó dùng profile tạm.
    restart không còn provider Antigravity; thợ vẫn chạy.
 9. **Bí mật:** `git grep` không thấy `refresh_token`/`access_token`/`ya29.`;
    hash thư mục `~/.gemini/antigravity-cli/` không đổi; token không vào repo.
-10. **Release:** tag `v0.2.0-rc.1` có 2 `.tgz` + `SHA256SUMS`; cài từ tarball
+10. **Release:** tag `v0.2.1-rc.5` có 2 `.tgz` + `SHA256SUMS`; cài từ tarball
     vào profile tạm sạch tái lập được tiêu chí 1, 2, 5.
 
 ---
